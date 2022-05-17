@@ -35,16 +35,6 @@ while run:
         if event.type == pygame.QUIT:
             run = False
     keys = pygame.key.get_pressed()
-    #
-    # if keys[pygame.key.key_code('a')] and x > width:
-    #     x -= vel
-    #
-    # if keys[pygame.key.key_code('d')] and x < WW - width:
-    #     x += vel
-    #
-    # if keys[pygame.key.key_code('w')] and y > height / 1:
-    #     y -= vel
-    #
     if keys[pygame.key.key_code(' ')]:
         y = 350
         x = 500
@@ -52,25 +42,6 @@ while run:
         ymove = 0
 
     color = (255, 0, 0)
-    #
-    # speed_color_change = 1
-    #
-    # if hr == 255 and hb < 255 and hg == 0:
-    #     hb += speed_color_change
-    # elif hb == 255 and hr > 0:
-    #     hr -= speed_color_change
-    # elif hb == 255 and hr == 0 and hg < 255:
-    #     hg += speed_color_change
-    # elif hg == 255 and hb > 0:
-    #     hb -= speed_color_change
-    # elif hr < 255 and hg == 255 and hb == 0:
-    #     hr += speed_color_change
-    # elif hr == 255 and hg > 0:
-    #     hg -= speed_color_change
-    #
-    # win.fill((hr // 3 + 150, hg // 3 + 150, hb // 3 + 150))
-    #
-    # color = (350 - (hr // 3 + 150), 350 - (hg // 3 + 150), 350 - (hb // 3 + 150))
 
     if (pygame.mouse.get_pressed()[0]
             and x - width < pygame.mouse.get_pos()[0] < x + width
@@ -113,8 +84,6 @@ while run:
         xmove *= 0.8
         
     win.fill((0, 0, 0))
-
-    # pygame.draw.circle(win, (10, 10, 10), (x, y), height + 5)
 
     if taped:
         color = (320 - (hr // 3 + 150), 330 - (hg // 3 + 150), 320 - (hb // 3 + 150))
