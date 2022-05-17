@@ -12,49 +12,32 @@ y = 200
 
 r = 40
 
-width = r
-height = r
-
-vel = 10
-
 taped = False
 
 mousex = 0
 mousey = 0
 
-hr = 255
-hg = 0
-hb = 0
-
 run = True
-
 rs = False
 
 xnext = 0
 ynext = 0
 
+rastx = 0
+rasty = 0
+
 gravity = 2
 
 rebound_force = 0.6
 environment_density = 10
+old_cursor_coords = (0, 0)
 
 while run:
-	pygame.time.delay(10)
-	
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			run = False
 	keys = pygame.key.get_pressed()
-	#
-	# if keys[pygame.key.key_code('a')] and x > width:
-	#     x -= vel
-	#
-	# if keys[pygame.key.key_code('d')] and x < WW - width:
-	#     x += vel
-	#
-	# if keys[pygame.key.key_code('w')] and y > height / 1:
-	#     y -= vel
-	#
+	
 	if keys[pygame.key.key_code(' ')]:
 		y = 350
 		x = 500
@@ -62,39 +45,28 @@ while run:
 		ynext = 0
 	
 	color = (255, 0, 0)
-	#
-	# speed_color_change = 1
-	#
-	# if hr == 255 and hb < 255 and hg == 0:
-	#     hb += speed_color_change
-	# elif hb == 255 and hr > 0:
-	#     hr -= speed_color_change
-	# elif hb == 255 and hr == 0 and hg < 255:
-	#     hg += speed_color_change
-	# elif hg == 255 and hb > 0:
-	#     hb -= speed_color_change
-	# elif hr < 255 and hg == 255 and hb == 0:
-	#     hr += speed_color_change
-	# elif hr == 255 and hg > 0:
-	#     hg -= speed_color_change
-	#
-	# win.fill((hr // 3 + 150, hg // 3 + 150, hb // 3 + 150))
-	#
-	# color = (350 - (hr // 3 + 150), 350 - (hg // 3 + 150), 350 - (hb // 3 + 150))
 	
-	if (pygame.mouse.get_pressed()[0]
-			and x - width < pygame.mouse.get_pos()[0] < x + width
-			and y - height < pygame.mouse.get_pos()[1] < y + height):
+	if (
+			pygame.mouse.get_pressed()[0]
+			and x - r < pygame.mouse.get_pos()[0] < x + r
+			and y - r < pygame.mouse.get_pos()[1] < y + r):
 		taped = True
 	
 	if not pygame.mouse.get_pressed()[0]:
 		if taped:
 			new_cursors_coords = (pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
-			xnext = (new_cursors_coords[0] - old_cursor_coords[0]) * 8
-			ynext = (new_cursors_coords[1] - old_cursor_coords[1]) * 8
+			xnext = (
+				abs((new_cursors_coords[0] - old_cursor_coords[0])) ** 0.75 * 15
+				if new_cursors_coords[0] - old_cursor_coords[0] > 0
+				else -abs((new_cursors_coords[0] - old_cursor_coords[0])) ** 0.75 * 15
+			)
+			ynext = (
+				abs((new_cursors_coords[1] - old_cursor_coords[1])) ** 0.75 * 15
+				if new_cursors_coords[1] - old_cursor_coords[1] > 0
+				else -abs((new_cursors_coords[1] - old_cursor_coords[1])) ** 0.75 * 15
+			)
 		
 		rs = False
-		
 		taped = False
 	
 	if taped:
@@ -104,26 +76,22 @@ while run:
 		mousey = pygame.mouse.get_pos()[1]
 		if not rs:
 			
-			rastx = (mousex - (x - width))
-			rasty = (mousey - (y - height))
+			rastx = (mousex - (x - r))
+			rasty = (mousey - (y - r))
 			rs = True
 		
 		else:
-			x = mousex - rastx + width
-			y = mousey - rasty + height
-			
-	'''Гравитация'''
-	if y + height < HW and not taped:
-		print(gravity)
-
+			x = mousex - rastx + r
+			y = mousey - rasty + r
+	
+	'''gravity'''
+	if y + r < HW and not taped:
 		gravity = gravity + ((1 / gravity) * 10)
-		print(gravity)
 		ynext += gravity
 	else:
 		gravity = 2
-		
-	'''Гравитация'''
-
+	'''gravity'''
+	
 	if xnext:
 		x += xnext / 10
 		xnext -= xnext / (3 * environment_density)
@@ -132,24 +100,24 @@ while run:
 		y += ynext / 10
 		ynext -= ynext / (3 * environment_density)
 	
-	if x + width >= WW:
+	if x + r >= WW:
 		xnext = -xnext
-		x = WW - width
+		x = WW - r
 		ynext *= rebound_force
 		xnext *= rebound_force
-	if y + height >= HW:
+	if y + r >= HW:
 		ynext = -ynext
-		y = HW - height
+		y = HW - r
 		ynext *= rebound_force
 		xnext *= rebound_force
-	if x - width <= 0:
+	if x - r <= 0:
 		xnext = -xnext
-		x = width
+		x = r
 		ynext *= rebound_force
 		xnext *= rebound_force
-	if y - height <= 0:
+	if y - r <= 0:
 		ynext = -ynext
-		y = height
+		y = r
 		ynext *= rebound_force
 		xnext *= rebound_force
 	
@@ -158,10 +126,9 @@ while run:
 	old_cursor_coords = (mousex, mousey)
 	
 	timer = pygame.time.Clock()
-	timer.tick(60000000)
+	timer.tick(99 ** 3)
 	
-	# pygame.draw.circle(win, (10, 10, 10), (x, y), height + 5)
-	pygame.draw.circle(win, (250, 250, 250), (x, y), height)
+	pygame.draw.circle(win, (250, 250, 250), (x, y), r)
 	pygame.display.update()
 
 pygame.quit()
